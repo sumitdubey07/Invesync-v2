@@ -26,6 +26,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'StockSim server running' })
 })
 
+app.get('/', (req, res) => {
+  res.send('StockSim Backend Running 🚀');
+});
+
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
