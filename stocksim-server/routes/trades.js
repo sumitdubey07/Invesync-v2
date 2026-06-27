@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.post('/', protect, async (req, res) => {
   try {
-    const { symbol, name, type, qty, price } = req.body
+    const { symbol, name, type, qty, price, note } = req.body
 
     if (!symbol || !type || !qty || !price) {
       return res.status(400).json({ message: 'Missing required fields' })
@@ -23,7 +23,6 @@ router.post('/', protect, async (req, res) => {
         return res.status(400).json({ message: 'Insufficient balance' })
       }
 
-      // Use findByIdAndUpdate instead of save()
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         { $inc: { balance: -Math.round(total * 100) / 100 } },
@@ -51,6 +50,7 @@ router.post('/', protect, async (req, res) => {
       const trade = await Trade.create({
         user: userId, symbol, name, type,
         qty: Number(qty), price: Number(price), total,
+        note: note || '',
       })
 
       return res.status(201).json({ trade, balance: updatedUser.balance })
@@ -78,6 +78,7 @@ router.post('/', protect, async (req, res) => {
       const trade = await Trade.create({
         user: userId, symbol, name, type,
         qty: Number(qty), price: Number(price), total,
+        note: note || '',
       })
 
       return res.status(201).json({ trade, balance: updatedUser.balance })

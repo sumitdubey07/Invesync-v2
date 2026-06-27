@@ -8,6 +8,7 @@ const tradeSchema = new mongoose.Schema({
   qty: { type: Number, required: true },
   price: { type: Number, required: true },
   total: { type: Number, required: true },
+  note: { type: String, default: '' },
 }, { timestamps: true })
 
 export default mongoose.model('Trade', tradeSchema)

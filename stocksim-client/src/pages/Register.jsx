@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { TrendingUp, Eye, EyeOff } from 'lucide-react'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
 
@@ -7,6 +8,7 @@ export default function Register() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPass, setShowPass] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { loginUser } = useAuth()
@@ -28,57 +30,80 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
-      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-8 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-white mb-1">StockSim</h1>
-        <p className="text-gray-400 text-sm mb-6">
-          Create account · Get ₹1,00,000 virtual balance
-        </p>
+    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-8">
+      <div className="w-full max-w-md">
+        <div className="flex items-center gap-2 mb-8">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
+            <TrendingUp size={16} className="text-white" />
+          </div>
+          <span className="text-white font-bold text-lg">Invesync</span>
+        </div>
+
+        <h2 className="text-3xl font-bold text-white mb-2">Create account</h2>
+        <p className="text-[#475569] mb-2">Start with <span className="text-green-400 font-semibold">₹1,00,000</span> virtual balance</p>
 
         {error && (
-          <p className="text-red-400 text-sm mb-4 bg-red-400/10 px-3 py-2 rounded-lg">
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
             {error}
-          </p>
+          </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Full name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full bg-[#0f0f0f] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full bg-[#0f0f0f] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-          />
-          <input
-            type="password"
-            placeholder="Password (min 6 characters)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            className="w-full bg-[#0f0f0f] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-          />
+        <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+          <div>
+            <label className="text-[#94a3b8] text-xs font-medium mb-1.5 block">Full Name</label>
+            <input
+              type="text"
+              placeholder="Sumit Dubey"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full bg-[#12121a] border border-[#2a2a3d] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 focus:bg-[#1a1a2e] transition-all placeholder-[#475569]"
+            />
+          </div>
+          <div>
+            <label className="text-[#94a3b8] text-xs font-medium mb-1.5 block">Email</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-[#12121a] border border-[#2a2a3d] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 focus:bg-[#1a1a2e] transition-all placeholder-[#475569]"
+            />
+          </div>
+          <div>
+            <label className="text-[#94a3b8] text-xs font-medium mb-1.5 block">Password</label>
+            <div className="relative">
+              <input
+                type={showPass ? 'text' : 'password'}
+                placeholder="Min 6 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="w-full bg-[#12121a] border border-[#2a2a3d] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 focus:bg-[#1a1a2e] transition-all placeholder-[#475569] pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-white"
+              >
+                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-medium transition-colors"
+            className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:opacity-50 transition-all mt-2"
           >
-            {loading ? 'Creating account...' : 'Create account'}
+            {loading ? 'Creating account...' : 'Create free account'}
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-gray-500 text-center">
+        <p className="mt-6 text-sm text-[#475569] text-center">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-400 hover:underline">
+          <Link to="/login" className="text-purple-400 hover:text-purple-300 font-medium">
             Sign in
           </Link>
         </p>

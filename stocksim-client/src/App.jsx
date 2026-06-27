@@ -6,6 +6,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import StockDetail from './pages/StockDetail'
 import Portfolio from './pages/Portfolio'
+import Leaderboard from './pages/Leaderboard'
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
         } />
         <Route path="/portfolio" element={
           <ProtectedRoute><Portfolio /></ProtectedRoute>
+        } />
+        <Route path="/leaderboard" element={
+          <ProtectedRoute><Leaderboard /></ProtectedRoute>
         } />
         </Routes>
       </BrowserRouter>

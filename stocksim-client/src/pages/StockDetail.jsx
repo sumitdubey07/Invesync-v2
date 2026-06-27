@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import StockChart from '../components/StockChart'
-import { getQuote, getHistory, getPrediction } from '../api/stocks'
 import api from '../api/axios'
+import Layout from '../components/Layout'
+import { getQuote, getHistory, getPrediction, getNews } from '../api/stocks'
+import NewsCard from '../components/NewsCard'
 
 const RANGES = ['1d', '1wk', '1mo', '3mo', '1y']
 
@@ -12,6 +14,7 @@ export default function StockDetail() {
   const { symbol } = useParams()
   const navigate = useNavigate()
   const { user, updateBalance } = useAuth()
+  const [note, setNote] = useState('')
 
   const [quote, setQuote] = useState(null)
   const [history, setHistory] = useState([])
@@ -21,7 +24,9 @@ export default function StockDetail() {
   const [prediction, setPrediction] = useState(null)
   const [predictionData, setPredictionData] = useState(null)
   const [showPrediction, setShowPrediction] = useState(false)
-
+  const [news, setNews] = useState([])
+  const [newsLoading, setNewsLoading] = useState(true)
+  
   const [orderType, setOrderType] = useState('buy')
   const [qty, setQty] = useState(1)
   const [orderMsg, setOrderMsg] = useState('')
@@ -51,6 +56,14 @@ export default function StockDetail() {
       .finally(() => setLoading(false))
   }, [symbol, range])
 
+  useEffect(() => {
+    setNewsLoading(true)
+    getNews(symbol)
+      .then((res) => setNews(res.data))
+      .catch(console.error)
+      .finally(() => setNewsLoading(false))
+  }, [symbol])
+
   const totalCost = quote ? (quote.price * qty).toFixed(2) : 0
   const isUp = quote?.changePercent >= 0
 
@@ -65,6 +78,7 @@ export default function StockDetail() {
         type: orderType,
         qty: Number(qty),
         price: quote.price,
+        note,
       })
       updateBalance(res.data.balance)
       setOrderMsg(
@@ -86,24 +100,7 @@ export default function StockDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f]">
-      {/* Navbar */}
-      <div className="border-b border-[#2a2a2a] px-6 py-4 flex items-center justify-between">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft size={18} />
-          <span className="text-sm">Back</span>
-        </button>
-        <div className="text-right">
-          <p className="text-xs text-gray-500">Virtual Balance</p>
-          <p className="text-green-400 font-bold text-sm">
-            ₹{user?.balance?.toLocaleString('en-IN')}
-          </p>
-        </div>
-      </div>
-
+    <Layout showFooter={false}>
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -193,7 +190,7 @@ export default function StockDetail() {
               ))}
             </div>
 
-            {/* AI Prediction card — inside left column */}
+            {/* AI Prediction card */}
             {prediction && showPrediction && (
               <div className="mt-4 bg-[#1a1a1a] border border-amber-500/30 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
@@ -225,6 +222,31 @@ export default function StockDetail() {
               </div>
             )}
           </div>
+
+            {/* News Feed */}
+            <div className="mt-6">
+              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                Latest News
+                <span className="text-xs text-[#475569] font-normal">Via Yahoo Finance</span>
+              </h3>
+              {newsLoading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="bg-[#1a1a2e] border border-[#2a2a3d] rounded-xl p-4 h-24 animate-pulse" />
+                  ))}
+                </div>
+              ) : news.length > 0 ? (
+                <div className="space-y-3">
+                  {news.map((article, i) => (
+                    <NewsCard key={i} article={article} />
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-[#1a1a2e] border border-[#2a2a3d] rounded-xl p-6 text-center">
+                  <p className="text-[#475569] text-sm">No recent news found for this stock</p>
+                </div>
+              )}
+            </div>
 
           {/* Right: Order panel */}
           <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 h-fit">
@@ -259,7 +281,17 @@ export default function StockDetail() {
                 ₹{quote?.price?.toLocaleString('en-IN')}
               </p>
             </div>
-
+                {/* Note */}
+              <div className="mb-4">
+                <p className="text-[#94a3b8] text-xs mb-1.5">Note <span className="text-[#475569]">(optional)</span></p>
+                <textarea
+                  placeholder="e.g. Bought on earnings dip..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={2}
+                  className="w-full bg-[#0a0a0f] border border-[#2a2a3d] text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-all placeholder-[#475569] resize-none"
+                />
+              </div>
             <div className="mb-4">
               <p className="text-gray-500 text-xs mb-1">Quantity</p>
               <div className="flex items-center gap-2">
@@ -327,6 +359,6 @@ export default function StockDetail() {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   )
 }

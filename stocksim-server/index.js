@@ -6,6 +6,8 @@ import authRoutes from './routes/auth.js'
 import stockRoutes from './routes/stocks.js'
 import tradeRoutes from './routes/trades.js'
 import predictRoutes from './routes/predict.js'
+import newsRoutes from './routes/news.js'
+import leaderboardRoutes from './routes/leaderboard.js'
 
 dotenv.config()
 
@@ -17,6 +19,8 @@ app.use('/api/auth', authRoutes)
 app.use('/api/stocks', stockRoutes)
 app.use('/api/trades', tradeRoutes)
 app.use('/api/predict', predictRoutes)
+app.use('/api/news', newsRoutes)
+app.use('/api/leaderboard', leaderboardRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'StockSim server running' })
