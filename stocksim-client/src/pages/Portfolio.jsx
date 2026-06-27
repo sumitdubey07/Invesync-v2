@@ -1,206 +1,3 @@
-// import { useState, useEffect } from 'react'
-// import { useNavigate } from 'react-router-dom'
-// import { TrendingUp, TrendingDown } from 'lucide-react'
-// import { useAuth } from '../context/AuthContext'
-// import { getHoldings, getQuote } from '../api/stocks'
-// import { getTrades } from '../api/stocks'
-// import Layout from '../components/Layout'
-
-// export default function Portfolio() {
-//   const { user } = useAuth()
-//   const navigate = useNavigate()
-
-//   const [holdings, setHoldings] = useState([])
-//   const [trades, setTrades] = useState([])
-//   const [enriched, setEnriched] = useState([])
-//   const [loading, setLoading] = useState(true)
-
-//   useEffect(() => {
-//     Promise.all([getHoldings(), getTrades()])
-//       .then(([hRes, tRes]) => {
-//         setHoldings(hRes.data)
-//         setTrades(tRes.data)
-//       })
-//       .catch(console.error)
-//   }, [])
-
-//   useEffect(() => {
-//     if (!holdings.length) { setLoading(false); return }
-
-//     const fetchPrices = async () => {
-//       const results = await Promise.all(
-//         holdings.map(async (h) => {
-//           try {
-//             const res = await getQuote(h.symbol)
-//             const livePrice = res.data.price
-//             const invested = h.avgPrice * h.qty
-//             const current = livePrice * h.qty
-//             const pnl = +(current - invested).toFixed(2)
-//             const pnlPercent = +((pnl / invested) * 100).toFixed(2)
-//             return { ...h, livePrice, invested, current, pnl, pnlPercent }
-//           } catch {
-//             return { ...h, livePrice: h.avgPrice, invested: h.avgPrice * h.qty, current: h.avgPrice * h.qty, pnl: 0, pnlPercent: 0 }
-//           }
-//         })
-//       )
-//       setEnriched(results)
-//       setLoading(false)
-//     }
-
-//     fetchPrices()
-//   }, [holdings])
-
-//   const totalInvested = enriched.reduce((sum, h) => sum + h.invested, 0)
-//   const totalCurrent = enriched.reduce((sum, h) => sum + h.current, 0)
-//   const totalPnL = +(totalCurrent - totalInvested).toFixed(2)
-//   const totalPnLPercent = totalInvested > 0 ? +((totalPnL / totalInvested) * 100).toFixed(2) : 0
-//   const isUp = totalPnL >= 0
-
-//   return (
-//     <Layout>
-//       <div className="max-w-5xl mx-auto px-6 py-8">
-//         <h1 className="text-2xl font-bold text-white mb-6">Portfolio</h1>
-
-//         {/* Summary cards */}
-//         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-//           {[
-//             { label: 'Total Invested', value: `₹${totalInvested.toLocaleString('en-IN')}`, color: 'text-white' },
-//             { label: 'Current Value', value: `₹${totalCurrent.toLocaleString('en-IN')}`, color: 'text-white' },
-//             {
-//               label: 'Total P&L',
-//               value: `${isUp ? '+' : ''}₹${totalPnL.toLocaleString('en-IN')}`,
-//               color: isUp ? 'text-green-400' : 'text-red-400'
-//             },
-//             {
-//               label: 'Returns',
-//               value: `${isUp ? '+' : ''}${totalPnLPercent}%`,
-//               color: isUp ? 'text-green-400' : 'text-red-400'
-//             },
-//           ].map((s) => (
-//             <div key={s.label} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4">
-//               <p className="text-gray-500 text-xs mb-1">{s.label}</p>
-//               <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* Holdings table */}
-//         <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden mb-8">
-//           <div className="px-6 py-4 border-b border-[#2a2a2a]">
-//             <h2 className="text-white font-semibold">Holdings</h2>
-//           </div>
-
-//           {loading ? (
-//             <div className="p-8 text-center text-gray-500 text-sm">Loading holdings...</div>
-//           ) : enriched.length === 0 ? (
-//             <div className="p-8 text-center">
-//               <p className="text-gray-500 text-sm">No holdings yet</p>
-//               <button
-//                 onClick={() => navigate('/dashboard')}
-//                 className="mt-3 text-blue-400 text-sm hover:underline"
-//               >
-//                 Buy your first stock
-//               </button>
-//             </div>
-//           ) : (
-//             <table className="w-full text-sm">
-//               <thead>
-//                 <tr className="text-gray-500 text-xs border-b border-[#2a2a2a]">
-//                   <th className="px-6 py-3 text-left">Stock</th>
-//                   <th className="px-6 py-3 text-right">Qty</th>
-//                   <th className="px-6 py-3 text-right">Avg Price</th>
-//                   <th className="px-6 py-3 text-right">Live Price</th>
-//                   <th className="px-6 py-3 text-right">Invested</th>
-//                   <th className="px-6 py-3 text-right">Current</th>
-//                   <th className="px-6 py-3 text-right">P&L</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {enriched.map((h) => (
-//                   <tr
-//                     key={h.symbol}
-//                     onClick={() => navigate(`/stock/${h.symbol}`)}
-//                     className="border-b border-[#2a2a2a] hover:bg-[#2a2a2a] cursor-pointer transition-colors"
-//                   >
-//                     <td className="px-6 py-4">
-//                       <p className="text-white font-medium">{h.symbol.replace('.NS', '')}</p>
-//                       <p className="text-gray-500 text-xs truncate max-w-[150px]">{h.name}</p>
-//                     </td>
-//                     <td className="px-6 py-4 text-right text-gray-300">{h.qty}</td>
-//                     <td className="px-6 py-4 text-right text-gray-300">₹{h.avgPrice.toLocaleString('en-IN')}</td>
-//                     <td className="px-6 py-4 text-right text-white font-medium">₹{h.livePrice?.toLocaleString('en-IN')}</td>
-//                     <td className="px-6 py-4 text-right text-gray-300">₹{h.invested.toLocaleString('en-IN')}</td>
-//                     <td className="px-6 py-4 text-right text-white">₹{h.current.toLocaleString('en-IN')}</td>
-//                     <td className="px-6 py-4 text-right">
-//                       <p className={h.pnl >= 0 ? 'text-green-400' : 'text-red-400'}>
-//                         {h.pnl >= 0 ? '+' : ''}₹{h.pnl.toLocaleString('en-IN')}
-//                       </p>
-//                       <p className={`text-xs ${h.pnlPercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-//                         {h.pnlPercent >= 0 ? '+' : ''}{h.pnlPercent}%
-//                       </p>
-//                     </td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           )}
-//         </div>
-
-//         {/* Trade history */}
-//         <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
-//           <div className="px-6 py-4 border-b border-[#2a2a2a]">
-//             <h2 className="text-white font-semibold">Trade History</h2>
-//           </div>
-//           {trades.length === 0 ? (
-//             <div className="p-8 text-center text-gray-500 text-sm">No trades yet</div>
-//           ) : (
-//             <table className="w-full text-sm">
-//               <thead>
-//                 <tr className="text-gray-500 text-xs border-b border-[#2a2a2a]">
-//                   <th className="px-6 py-3 text-left">Stock</th>
-//                   <th className="px-6 py-3 text-left">Type</th>
-//                   <th className="px-6 py-3 text-right">Qty</th>
-//                   <th className="px-6 py-3 text-right">Price</th>
-//                   <th className="px-6 py-3 text-right">Total</th>
-//                   <th className="px-6 py-3 text-right">Date</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {trades.map((t) => (
-//                   <tr key={t._id} className="border-b border-[#2a2a2a] last:border-0">
-//                     <td className="px-6 py-4">
-//                       <p className="text-white font-medium">{t.symbol.replace('.NS', '')}</p>
-//                       <p className="text-gray-500 text-xs">{t.name}</p>
-//                     </td>
-//                     <td className="px-6 py-4">
-//                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-//                         t.type === 'buy'
-//                           ? 'bg-green-500/10 text-green-400'
-//                           : 'bg-red-500/10 text-red-400'
-//                       }`}>
-//                         {t.type.toUpperCase()}
-//                       </span>
-//                     </td>
-//                     <td className="px-6 py-4 text-right text-gray-300">{t.qty}</td>
-//                     <td className="px-6 py-4 text-right text-gray-300">₹{t.price.toLocaleString('en-IN')}</td>
-//                     <td className="px-6 py-4 text-right text-white">₹{t.total.toLocaleString('en-IN')}</td>
-//                     <td className="px-6 py-4 text-right text-gray-500 text-xs">
-//                       {new Date(t.createdAt).toLocaleDateString('en-IN', {
-//                         day: 'numeric', month: 'short', year: 'numeric'
-//                       })}
-//                     </td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           )}
-//         </div>
-//       </div>
-//     </Layout>
-//   )
-// }
-
-
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -271,9 +68,11 @@ export default function Portfolio() {
           animation: pShimmer 1.5s infinite;
           border-radius: 12px;
         }
+
+        /* ── CHANGED: CSS variables on section card ── */
         .p-section {
-          background: #0a0a14;
-          border: 1px solid rgba(139,92,246,.18);
+          background: var(--card);
+          border: 1px solid var(--border);
           border-radius: 14px;
           overflow: hidden;
           position: relative;
@@ -284,35 +83,42 @@ export default function Portfolio() {
           background: linear-gradient(90deg, transparent, rgba(139,92,246,.4), transparent);
           pointer-events: none;
         }
+
+        /* ── CHANGED: CSS variable on section header border ── */
         .p-section-head {
           padding: 14px 20px;
-          border-bottom: 1px solid rgba(139,92,246,.12);
+          border-bottom: 1px solid var(--border);
           display: flex; align-items: center; gap: 8px;
         }
+
+        /* ── CHANGED: CSS variables on column header ── */
         .p-col-head {
-          font-size: 10px; font-weight: 600; color: #f1f5f9;
+          font-size: 10px; font-weight: 600; color: var(--text-muted);
           text-transform: uppercase; letter-spacing: 1px;
           padding: 10px 20px;
-          border-bottom: 1px solid rgba(139,92,246,.1);
+          border-bottom: 1px solid var(--border);
         }
+
+        /* ── CHANGED: CSS variable on row border and hover ── */
         .p-row {
-          border-bottom: 1px solid rgba(139,92,246,.07);
+          border-bottom: 1px solid var(--border);
           transition: background .15s;
           cursor: pointer;
         }
         .p-row:last-child { border-bottom: none; }
-        .p-row:hover { background: rgba(139,92,246,.07); }
+        .p-row:hover { background: var(--row-hover); }
         .p-row td { padding: 14px 20px; font-size: 12px; }
 
         .p-trade-row {
-          border-bottom: 1px solid rgba(139,92,246,.07);
+          border-bottom: 1px solid var(--border);
         }
         .p-trade-row:last-child { border-bottom: none; }
         .p-trade-row td { padding: 13px 20px; font-size: 12px; }
 
+        /* ── CHANGED: CSS variables on stat card ── */
         .p-stat-card {
-          background: #0a0a14;
-          border: 1px solid rgba(139,92,246,.18);
+          background: var(--card);
+          border: 1px solid var(--border);
           border-radius: 12px;
           padding: 16px;
           position: relative;
@@ -325,8 +131,10 @@ export default function Portfolio() {
           position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
           background: linear-gradient(90deg, transparent, rgba(139,92,246,.3), transparent);
         }
+
+        /* ── CHANGED: CSS variable on stat label ── */
         .p-stat-label {
-          font-size: 9px; color: #cbd5e1; text-transform: uppercase;
+          font-size: 9px; color: var(--text-muted); text-transform: uppercase;
           letter-spacing: 1px; font-family: monospace; margin-bottom: 6px;
         }
         .p-stat-val { font-size: 18px; font-weight: 700; font-family: monospace; }
@@ -345,17 +153,19 @@ export default function Portfolio() {
             <Briefcase size={16} className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">Portfolio</h1>
-            <p className="text-[10px] text-[#d6dae1] font-mono uppercase tracking-wider">Live positions · NSE</p>
+            {/* ── CHANGED: CSS variable on page title ── */}
+            <h1 className="text-xl font-bold tracking-tight" style={{ color: 'var(--text)' }}>Portfolio</h1>
+            {/* ── CHANGED: CSS variable on subtitle ── */}
+            <p className="text-[10px] font-mono uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Live positions · NSE</p>
           </div>
         </div>
 
         {/* Summary stat cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           {[
-            { label: 'Invested',      value: `₹${totalInvested.toLocaleString('en-IN')}`, color: '#fff' },
-            { label: 'Current Value', value: `₹${totalCurrent.toLocaleString('en-IN')}`,  color: '#fff' },
-            { label: 'Total P&L',    value: `${isUp?'+':''}₹${totalPnL.toLocaleString('en-IN')}`, color: isUp ? '#4ade80' : '#f87171' },
+            { label: 'Invested',      value: `₹${totalInvested.toLocaleString('en-IN')}`, color: 'var(--text)' },
+            { label: 'Current Value', value: `₹${totalCurrent.toLocaleString('en-IN')}`,  color: 'var(--text)' },
+            { label: 'Total P&L',     value: `${isUp?'+':''}₹${totalPnL.toLocaleString('en-IN')}`, color: isUp ? '#4ade80' : '#f87171' },
             { label: 'Returns',       value: `${isUp?'+':''}${totalPnLPercent}%`,          color: isUp ? '#4ade80' : '#f87171' },
           ].map((s, i) => (
             <div
@@ -365,6 +175,7 @@ export default function Portfolio() {
             >
               <div className="p-corner-tl" /><div className="p-corner-br" />
               <p className="p-stat-label">{s.label}</p>
+              {/* ── CHANGED: dynamic color already uses var(--text) for neutral cards ── */}
               <p className="p-stat-val" style={{ color: s.color }}>{s.value}</p>
             </div>
           ))}
@@ -381,9 +192,12 @@ export default function Portfolio() {
         <div className="p-section mb-6" style={{ animation: 'pfadeUp .5s ease .25s both' }}>
           <div className="p-section-head">
             <div className="w-1.5 h-1.5 rounded-full bg-purple-400" style={{ animation: 'ppulse 2s infinite' }} />
-            <h2 className="text-white text-sm font-semibold">Holdings</h2>
+            {/* ── CHANGED: CSS variable on section title ── */}
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Holdings</h2>
             {!loading && enriched.length > 0 && (
-              <span className="ml-auto text-[10px] font-mono text-slate-400">{enriched.length} position{enriched.length !== 1 ? 's' : ''}</span>
+              <span className="ml-auto text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                {enriched.length} position{enriched.length !== 1 ? 's' : ''}
+              </span>
             )}
           </div>
 
@@ -393,7 +207,8 @@ export default function Portfolio() {
             </div>
           ) : enriched.length === 0 ? (
             <div className="p-10 text-center">
-              <p className="text-slate-400 text-sm font-mono mb-3">NO_POSITIONS_FOUND</p>
+              {/* ── CHANGED: CSS variable on empty state text ── */}
+              <p className="text-sm font-mono mb-3" style={{ color: 'var(--text-muted)' }}>NO_POSITIONS_FOUND</p>
               <button onClick={() => navigate('/dashboard')} className="text-purple-400 text-xs hover:text-purple-300 transition-colors border border-purple-500/30 px-4 py-2 rounded-lg hover:border-purple-500/60">
                 Browse markets →
               </button>
@@ -428,16 +243,18 @@ export default function Portfolio() {
                           {h.symbol.replace('.NS','').slice(0,2)}
                         </div>
                         <div>
-                          <p className="text-white font-semibold text-xs">{h.symbol.replace('.NS','')}</p>
-                          <p className="text-slate-400 text-[10px] truncate max-w-[120px]">{h.name}</p>
+                          {/* ── CHANGED: CSS variable on ticker + name ── */}
+                          <p className="font-semibold text-xs" style={{ color: 'var(--text)' }}>{h.symbol.replace('.NS','')}</p>
+                          <p className="text-[10px] truncate max-w-[120px]" style={{ color: 'var(--text-faint)' }}>{h.name}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="text-right text-[#94a3b8] font-mono">{h.qty}</td>
-                    <td className="text-right text-[#94a3b8] font-mono">₹{h.avgPrice.toLocaleString('en-IN')}</td>
-                    <td className="text-right text-white font-mono font-semibold">₹{h.livePrice?.toLocaleString('en-IN')}</td>
-                    <td className="text-right text-[#94a3b8] font-mono">₹{h.invested.toLocaleString('en-IN')}</td>
-                    <td className="text-right text-white font-mono">₹{h.current.toLocaleString('en-IN')}</td>
+                    {/* ── CHANGED: CSS variable on all data cells ── */}
+                    <td className="text-right font-mono" style={{ color: 'var(--text-muted)' }}>{h.qty}</td>
+                    <td className="text-right font-mono" style={{ color: 'var(--text-muted)' }}>₹{h.avgPrice.toLocaleString('en-IN')}</td>
+                    <td className="text-right font-mono font-semibold" style={{ color: 'var(--text)' }}>₹{h.livePrice?.toLocaleString('en-IN')}</td>
+                    <td className="text-right font-mono" style={{ color: 'var(--text-muted)' }}>₹{h.invested.toLocaleString('en-IN')}</td>
+                    <td className="text-right font-mono" style={{ color: 'var(--text)' }}>₹{h.current.toLocaleString('en-IN')}</td>
                     <td className="text-right">
                       <p className={`font-mono font-semibold text-xs flex items-center justify-end gap-0.5 ${h.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {h.pnl >= 0 ? <ArrowUpRight size={11}/> : <ArrowDownRight size={11}/>}
@@ -458,14 +275,19 @@ export default function Portfolio() {
         <div className="p-section" style={{ animation: 'pfadeUp .5s ease .4s both' }}>
           <div className="p-section-head">
             <History size={13} className="text-purple-400" />
-            <h2 className="text-white text-sm font-semibold">Trade History</h2>
+            {/* ── CHANGED: CSS variable on section title ── */}
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Trade History</h2>
             {trades.length > 0 && (
-              <span className="ml-auto text-[10px] font-mono text-slate-400">{trades.length} trade{trades.length !== 1 ? 's' : ''}</span>
+              <span className="ml-auto text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                {trades.length} trade{trades.length !== 1 ? 's' : ''}
+              </span>
             )}
           </div>
 
           {trades.length === 0 ? (
-            <div className="p-10 text-center text-slate-400 text-xs font-mono">NO_TRADES_RECORDED</div>
+            <div className="p-10 text-center text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
+              NO_TRADES_RECORDED
+            </div>
           ) : (
             <table className="w-full">
               <thead>
@@ -499,8 +321,9 @@ export default function Portfolio() {
                           {t.symbol.replace('.NS','').slice(0,2)}
                         </div>
                         <div>
-                          <p className="text-white font-semibold text-xs">{t.symbol.replace('.NS','')}</p>
-                          <p className="text-slate-400 text-[10px]">{t.name}</p>
+                          {/* ── CHANGED: CSS variable on ticker + name ── */}
+                          <p className="font-semibold text-xs" style={{ color: 'var(--text)' }}>{t.symbol.replace('.NS','')}</p>
+                          <p className="text-[10px]" style={{ color: 'var(--text-faint)' }}>{t.name}</p>
                         </div>
                       </div>
                     </td>
@@ -516,13 +339,16 @@ export default function Portfolio() {
                         {t.type.toUpperCase()}
                       </span>
                     </td>
-                    <td className="text-right text-[#94a3b8] font-mono">{t.qty}</td>
-                    <td className="text-right text-[#94a3b8] font-mono">₹{t.price.toLocaleString('en-IN')}</td>
-                    <td className="text-right text-white font-mono">₹{t.total.toLocaleString('en-IN')}</td>
-                    <td className="text-[#475569] text-xs italic max-w-[150px] truncate">
+                    {/* ── CHANGED: CSS variables on trade data cells ── */}
+                    <td className="text-right font-mono" style={{ color: 'var(--text-muted)' }}>{t.qty}</td>
+                    <td className="text-right font-mono" style={{ color: 'var(--text-muted)' }}>₹{t.price.toLocaleString('en-IN')}</td>
+                    <td className="text-right font-mono" style={{ color: 'var(--text)' }}>₹{t.total.toLocaleString('en-IN')}</td>
+                    {/* ── CHANGED: CSS variable on note cell ── */}
+                    <td className="text-xs italic max-w-[150px] truncate" style={{ color: 'var(--text-faint)' }}>
                       {t.note || '—'}
                     </td>
-                    <td className="text-right text-slate-400 text-[10px] font-mono">
+                    {/* ── CHANGED: CSS variable on date cell ── */}
+                    <td className="text-right text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
                       {new Date(t.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
                     </td>
                   </tr>

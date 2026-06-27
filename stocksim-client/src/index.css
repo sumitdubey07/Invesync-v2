@@ -1,4 +1,4 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -38,4 +38,64 @@ body {
   background: #1a1a2e;
   border: 1px solid #2a2a3d;
   border-radius: 12px;
+} */
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Dark theme (default) ── */
+:root, [data-theme="dark"] {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --card: #1a1a2e;
+  --border: rgba(139,92,246,.18);
+  --border-hover: rgba(139,92,246,.4);
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-faint: #475569;
+  --navbar-bg: rgba(10,10,15,0.9);
+  --input-bg: #12121a;
+  --row-hover: rgba(139,92,246,.07);
+  --shimmer-1: #1a1a2e;
+  --shimmer-2: #252540;
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg: #f8f7ff;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: rgba(139,92,246,.2);
+  --border-hover: rgba(139,92,246,.5);
+  --text: #1e1b4b;
+  --text-muted: #6b7280;
+  --text-faint: #9ca3af;
+  --navbar-bg: rgba(255,255,255,0.95);
+  --input-bg: #f5f3ff;
+  --row-hover: rgba(139,92,246,.05);
+  --shimmer-1: #f0edff;
+  --shimmer-2: #e5e0ff;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 2px; }
+
+.gradient-text {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

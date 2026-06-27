@@ -18,7 +18,9 @@ const tabs = [
   const handleLogout = () => { logout(); navigate('/login') }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden border-t border-[#2a2a3d] bg-[#0a0a0f]/95 backdrop-blur-md">
+    <div
+  style={{ background: 'var(--navbar-bg)', borderTop: '1px solid var(--border)' }}
+  className="fixed bottom-0 left-0 right-0 z-50 md:hidden backdrop-blur-md">
       <div className="flex items-center justify-around px-4 py-2">
         {tabs.map((tab) => {
           const Icon = tab.icon

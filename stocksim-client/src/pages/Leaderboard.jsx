@@ -24,6 +24,11 @@ export default function Leaderboard() {
 
   return (
     <Layout>
+      <style>{`
+        .lb-row { transition: background .15s; }
+        .lb-row:hover { background: var(--row-hover); }
+      `}</style>
+
       <div className="max-w-4xl mx-auto px-6 py-8">
 
         {/* Header */}
@@ -32,8 +37,10 @@ export default function Leaderboard() {
             <Trophy size={20} className="text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Leaderboard</h1>
-            <p className="text-slate-400 text-sm">Top traders ranked by portfolio returns</p>
+            {/* ── CHANGED: CSS variable on title ── */}
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>Leaderboard</h1>
+            {/* ── CHANGED: CSS variable on subtitle ── */}
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Top traders ranked by portfolio returns</p>
           </div>
         </div>
 
@@ -54,11 +61,13 @@ export default function Leaderboard() {
                       : 'bg-orange-500/10 border-orange-500/30'
                   }`}>
                     <p className="text-2xl mb-1">{medals[actualRank - 1]}</p>
-                    <p className="text-white font-semibold text-sm truncate">{r.name}</p>
+                    {/* ── CHANGED: CSS variable on podium name ── */}
+                    <p className="font-semibold text-sm truncate" style={{ color: 'var(--text)' }}>{r.name}</p>
                     <p className={`text-sm font-bold mt-1 ${isUp ? 'text-green-400' : 'text-red-400'}`}>
                       {isUp ? '+' : ''}{r.returns}%
                     </p>
-                    <p className="text-slate-300 text-xs mt-1">
+                    {/* ── CHANGED: CSS variable on podium value ── */}
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
                       ₹{r.totalValue.toLocaleString('en-IN')}
                     </p>
                   </div>
@@ -69,24 +78,41 @@ export default function Leaderboard() {
         )}
 
         {/* Full rankings table */}
-        <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-            <h2 className="text-white font-semibold">All Traders</h2>
-            <span className="text-slate-400 text-xs">Updated every 2 min</span>
+        {/* ── CHANGED: CSS variables on table card ── */}
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+        >
+          <div
+            className="px-6 py-4 flex items-center justify-between"
+            style={{ borderBottom: '1px solid var(--border)' }}
+          >
+            {/* ── CHANGED: CSS variable on table heading ── */}
+            <h2 className="font-semibold" style={{ color: 'var(--text)' }}>All Traders</h2>
+            {/* ── CHANGED: CSS variable on "Updated" label ── */}
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Updated every 2 min</span>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <p className="text-slate-300 text-sm">Loading rankings...</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading rankings...</p>
             </div>
           ) : rankings.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-slate-300 text-sm">No traders yet</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No traders yet</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-slate-300 text-xs uppercase border-b border-slate-700 bg-slate-800">
+                {/* ── CHANGED: CSS variables on thead ── */}
+                <tr
+                  className="text-xs uppercase"
+                  style={{
+                    color: 'var(--text-muted)',
+                    borderBottom: '1px solid var(--border)',
+                    background: 'var(--surface)',
+                  }}
+                >
                   <th className="px-6 py-3 text-left">Rank</th>
                   <th className="px-6 py-3 text-left">Trader</th>
                   <th className="px-6 py-3 text-right">Portfolio Value</th>
@@ -100,15 +126,20 @@ export default function Leaderboard() {
                   const isMe = r.email.startsWith(user?.email?.slice(0, 2))
                   return (
                     <tr
-                      className={`border-b border-[#2a2a3d] last:border-0 transition-colors ${
-                        isMe ? 'bg-purple-500/5 border-purple-500/20' : 'hover:bg-[#2a2a3d]'
-                        }`}
+                      key={r.email}
+                      className="lb-row last:border-0"
+                      style={{
+                        borderBottom: '1px solid var(--border)',
+                        background: isMe ? 'rgba(139,92,246,.06)' : undefined,
+                        outline: isMe ? '1px solid rgba(139,92,246,.2)' : undefined,
+                      }}
                     >
                       <td className="px-6 py-4">
                         {r.rank <= 3 ? (
                           <span className="text-lg">{medals[r.rank - 1]}</span>
                         ) : (
-                          <span className="text-slate-400 font-mono text-sm">#{r.rank}</span>
+                          // ── CHANGED: CSS variable on rank number ──
+                          <span className="font-mono text-sm" style={{ color: 'var(--text-muted)' }}>#{r.rank}</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -117,25 +148,30 @@ export default function Leaderboard() {
                             {r.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-white font-medium text-sm">
+                            {/* ── CHANGED: CSS variable on trader name ── */}
+                            <p className="font-medium text-sm" style={{ color: 'var(--text)' }}>
                               {r.name}
                               {isMe && (
                                 <span className="ml-2 text-xs text-purple-400 font-normal">(you)</span>
                               )}
                             </p>
-                            <p className="text-slate-400 text-xs">{r.email}</p>
+                            {/* ── CHANGED: CSS variable on email ── */}
+                            <p className="text-xs" style={{ color: 'var(--text-faint)' }}>{r.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <p className="text-white font-semibold">
+                        {/* ── CHANGED: CSS variable on portfolio value ── */}
+                        <p className="font-semibold" style={{ color: 'var(--text)' }}>
                           ₹{r.totalValue.toLocaleString('en-IN')}
                         </p>
-                        <p className="text-slate-400 text-xs">
+                        {/* ── CHANGED: CSS variable on holdings sub-label ── */}
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                           Holdings: ₹{r.holdingsValue.toLocaleString('en-IN')}
                         </p>
                       </td>
-                      <td className="px-6 py-4 text-right text-slate-200 font-medium">
+                      {/* ── CHANGED: CSS variable on cash cell ── */}
+                      <td className="px-6 py-4 text-right font-medium" style={{ color: 'var(--text-muted)' }}>
                         ₹{r.balance.toLocaleString('en-IN')}
                       </td>
                       <td className="px-6 py-4 text-right">

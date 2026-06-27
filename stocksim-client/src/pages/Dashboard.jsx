@@ -32,7 +32,6 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      {/* Keyframe injection */}
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(14px); }
@@ -52,9 +51,10 @@ export default function Dashboard() {
           100% { background-position:  200% 0; }
         }
         .stock-card { transition: transform .18s ease, border-color .18s ease, background .18s ease; }
-        .stock-card:hover { transform: translateY(-3px); }
+        .stock-card:hover { transform: translateY(-3px) scale(1.02); border-color: rgba(139,92,246,.5) !important; }
         .gl-row { transition: background .15s ease; }
-        .gl-row:hover { background: #2a2a3d; }
+        .gl-row:hover { background: var(--row-hover) !important; }
+        .gl-card { transition: background .15s ease; }
         .pulse-card { transition: background .2s ease, border-color .2s ease; }
         .pulse-card:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
         .shimmer-box {
@@ -71,10 +71,7 @@ export default function Dashboard() {
           className="relative -z-0 rounded-2xl overflow-hidden mb-8 border border-purple-500/20"
           style={{ animation: 'fadeUp .5s ease both' }}
         >
-          {/* Layered bg */}
           <div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-[#0f0f1a] to-blue-950/60" />
-
-          {/* Animated blobs */}
           <div
             className="absolute w-64 h-64 rounded-full bg-purple-600/10 blur-3xl"
             style={{ top: '-60px', left: '22%', animation: 'blobFloat 8s ease-in-out infinite' }}
@@ -86,13 +83,9 @@ export default function Dashboard() {
 
           <div className="relative px-8 py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              {/* Live ping dot */}
               <div className="flex items-center gap-2 mb-3">
                 <span className="relative flex h-2 w-2">
-                  <span
-                    className="absolute inline-flex h-full w-full rounded-full bg-green-400"
-                    style={{ animation: 'ping 2s ease-in-out infinite' }}
-                  />
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-green-400" style={{ animation: 'ping 2s ease-in-out infinite' }} />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
                 </span>
                 <span className="text-green-400 text-xs font-medium tracking-widest uppercase">NSE Live</span>
@@ -105,13 +98,12 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Market pulse strip */}
             {!loading && (
               <div className="flex gap-3 shrink-0">
                 {[
-                  { label: 'Advancing', value: totalUp, cls: 'text-green-400' },
-                  { label: 'Declining', value: totalDown, cls: 'text-red-400' },
-                  { label: 'Avg move', value: `${Number(avgChange) >= 0 ? '+' : ''}${avgChange}%`, cls: Number(avgChange) >= 0 ? 'text-green-400' : 'text-red-400' },
+                  { label: 'Advancing', value: totalUp,    cls: 'text-green-400' },
+                  { label: 'Declining', value: totalDown,  cls: 'text-red-400' },
+                  { label: 'Avg move',  value: `${Number(avgChange) >= 0 ? '+' : ''}${avgChange}%`, cls: Number(avgChange) >= 0 ? 'text-green-400' : 'text-red-400' },
                 ].map((item, i) => (
                   <div
                     key={item.label}
@@ -135,19 +127,15 @@ export default function Dashboard() {
           >
             <div className="flex items-center gap-2">
               <BarChart2 size={15} className="text-purple-400" />
-              <h2 className="text-white font-semibold text-base">Market Overview</h2>
+              <h2 className="font-semibold text-base" style={{ color: 'var(--text)' }}>Market Overview</h2>
             </div>
-            <span className="text-slate-400 text-xs">15 min delayed</span>
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>15 min delayed</span>
           </div>
 
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {[...Array(10)].map((_, i) => (
-                <div
-                  key={i}
-                  className="shimmer-box rounded-xl h-28"
-                  style={{ animationDelay: `${i * 0.07}s` }}
-                />
+                <div key={i} className="shimmer-box rounded-xl h-28" style={{ animationDelay: `${i * 0.07}s` }} />
               ))}
             </div>
           ) : (
@@ -155,18 +143,26 @@ export default function Dashboard() {
               {market.map((stock, i) => {
                 const isUp = stock.changePercent >= 0
                 return (
+                  // ── CHANGED: CSS variables on stock card ──
                   <div
                     key={stock.symbol}
                     onClick={() => navigate(`/stock/${stock.symbol}`)}
-                    className="stock-card text-gray-500 border border-[#2a2a3d] rounded-xl p-4 cursor-pointer hover:border-purple-500/50 hover:bg-[#1e1e35]"
-                    style={{ animation: `fadeUp .4s ease ${i * 0.045}s both` }}
+                    style={{
+                      background: 'var(--card)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text)',
+                      animation: `fadeUp .4s ease ${i * 0.045}s both`,
+                    }}
+                    className="stock-card rounded-xl p-4 cursor-pointer"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="text-white font-semibold text-sm">
+                        {/* ── CHANGED: CSS variable on ticker ── */}
+                        <p style={{ color: 'var(--text)' }} className="font-semibold text-sm">
                           {stock.symbol.replace('.NS', '')}
                         </p>
-                        <p className="text-slate-400 text-[10px] mt-0.5 truncate max-w-[90px]">
+                        {/* ── CHANGED: CSS variable on company name ── */}
+                        <p style={{ color: 'var(--text-faint)' }} className="text-[10px] mt-0.5 truncate max-w-[90px]">
                           {stock.name?.split(' ').slice(0, 2).join(' ')}
                         </p>
                       </div>
@@ -176,7 +172,8 @@ export default function Dashboard() {
                         {isUp ? '+' : ''}{stock.changePercent}%
                       </span>
                     </div>
-                    <p className="text-white font-bold text-sm">
+                    {/* ── CHANGED: CSS variable on price ── */}
+                    <p style={{ color: 'var(--text)' }} className="font-bold text-sm">
                       ₹{stock.price?.toLocaleString('en-IN')}
                     </p>
                     <p className={`text-xs mt-1 flex items-center gap-0.5 ${isUp ? 'text-green-400' : 'text-red-400'}`}>
@@ -198,24 +195,37 @@ export default function Dashboard() {
           >
             {[
               { title: 'Top Gainers', icon: <TrendingUp size={13} className="text-green-400" />, iconBg: 'bg-green-500/10', data: gainers, isGain: true },
-              { title: 'Top Losers',  icon: <TrendingDown size={13} className="text-red-400" />,  iconBg: 'bg-red-500/10',   data: losers,  isGain: false },
+              { title: 'Top Losers',  icon: <TrendingDown size={13} className="text-red-400" />,  iconBg: 'bg-red-500/10',  data: losers,  isGain: false },
             ].map(({ title, icon, iconBg, data, isGain }) => (
-              <div key={title} className="text-gray-500 border border-[#2a2a3d] rounded-xl overflow-hidden">
-                <div className="px-5 py-4 border-b border-[#2a2a3d] flex items-center justify-between">
+              // ── CHANGED: CSS variables on gainers/losers card ──
+              <div
+                key={title}
+                className="gl-card rounded-xl overflow-hidden"
+                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+              >
+                <div
+                  className="px-5 py-4 flex items-center justify-between"
+                  style={{ borderBottom: '1px solid var(--border)' }}
+                >
                   <div className="flex items-center gap-2">
                     <div className={`w-6 h-6 rounded-lg ${iconBg} flex items-center justify-center`}>
                       {icon}
                     </div>
-                    <h3 className="text-white font-semibold text-sm">{title}</h3>
+                    {/* ── CHANGED: CSS variable on section title ── */}
+                    <h3 className="font-semibold text-sm" style={{ color: 'var(--text)' }}>{title}</h3>
                   </div>
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider">Today</span>
+                  <span className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Today</span>
                 </div>
+
                 {data.map((s, i) => (
                   <div
                     key={s.symbol}
                     onClick={() => navigate(`/stock/${s.symbol}`)}
-                    className="gl-row px-5 py-3.5 flex items-center justify-between cursor-pointer border-b border-[#2a2a3d] last:border-0"
-                    style={{ animation: `fadeUp .4s ease ${0.45 + i * 0.08}s both` }}
+                    className="gl-row px-5 py-3.5 flex items-center justify-between cursor-pointer"
+                    style={{
+                      borderBottom: '1px solid var(--border)',
+                      animation: `fadeUp .4s ease ${0.45 + i * 0.08}s both`,
+                    }}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-bold ${
@@ -224,12 +234,13 @@ export default function Dashboard() {
                         {s.symbol.replace('.NS', '').slice(0, 2)}
                       </div>
                       <div>
-                        <p className="text-white text-sm font-medium">{s.symbol.replace('.NS', '')}</p>
-                        <p className="text-slate-400 text-xs">{s.name?.split(' ').slice(0, 2).join(' ')}</p>
+                        {/* ── CHANGED: CSS variable on row ticker + name ── */}
+                        <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{s.symbol.replace('.NS', '')}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-faint)' }}>{s.name?.split(' ').slice(0, 2).join(' ')}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-white text-sm font-bold">₹{s.price?.toLocaleString('en-IN')}</p>
+                      <p className="text-sm font-bold" style={{ color: 'var(--text)' }}>₹{s.price?.toLocaleString('en-IN')}</p>
                       <p className={`text-xs flex items-center justify-end gap-0.5 font-medium ${
                         isGain ? 'text-green-400' : 'text-red-400'
                       }`}>

@@ -24,22 +24,24 @@ export default function SectorChart({ holdings }) {
     if (!active || !payload?.length) return null
     return (
       <div style={{
-        background: '#0f0f1a',
-        border: '1px solid rgba(139,92,246,.3)',
+        // ── CHANGED: CSS variables on tooltip ──
+        background: 'var(--card)',
+        border: '1px solid var(--border)',
         borderRadius: 10,
         padding: '8px 12px',
       }}>
-        <p style={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>{payload[0].name}</p>
-        <p style={{ color: '#94a3b8', fontSize: 11 }}>₹{payload[0].value.toLocaleString('en-IN')}</p>
+        <p style={{ color: 'var(--text)', fontSize: 12, fontWeight: 600 }}>{payload[0].name}</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: 11 }}>₹{payload[0].value.toLocaleString('en-IN')}</p>
         <p style={{ color: '#a78bfa', fontSize: 11 }}>{payload[0].payload.percent}%</p>
       </div>
     )
   }
 
   return (
+    // ── CHANGED: CSS variables on outer card ──
     <div style={{
-      background: '#0a0a14',
-      border: '1px solid rgba(139,92,246,.18)',
+      background: 'var(--card)',
+      border: '1px solid var(--border)',
       borderRadius: 14,
       padding: '20px 24px',
       position: 'relative',
@@ -51,15 +53,16 @@ export default function SectorChart({ holdings }) {
         background: 'linear-gradient(90deg, transparent, rgba(139,92,246,.4), transparent)',
       }} />
 
+      {/* ── CHANGED: CSS variable on label text ── */}
       <p style={{
-        fontSize: 10, color: '#cbd5e1', textTransform: 'uppercase',
+        fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase',
         letterSpacing: 1, fontFamily: 'monospace', marginBottom: 16,
       }}>
         Sector Exposure
       </p>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-        {/* Donut chart — smaller */}
+        {/* Donut chart */}
         <div style={{ width: 160, height: 160, flexShrink: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -87,7 +90,7 @@ export default function SectorChart({ holdings }) {
           </ResponsiveContainer>
         </div>
 
-        {/* Legend with values */}
+        {/* Legend */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {data.map((entry) => (
             <div key={entry.name} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -97,11 +100,11 @@ export default function SectorChart({ holdings }) {
                 background: SECTOR_COLORS[entry.name] || SECTOR_COLORS['Other'],
               }} />
 
-              {/* Sector name */}
-              <span style={{ fontSize: 12, color: '#e2e8f0', flex: 1 }}>{entry.name}</span>
+              {/* ── CHANGED: CSS variable on sector name ── */}
+              <span style={{ fontSize: 12, color: 'var(--text)', flex: 1 }}>{entry.name}</span>
 
-              {/* Progress bar */}
-              <div style={{ width: 80, height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}>
+              {/* ── CHANGED: CSS variable on progress bar track ── */}
+              <div style={{ width: 80, height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
                   width: `${entry.percent}%`,
@@ -110,13 +113,13 @@ export default function SectorChart({ holdings }) {
                 }} />
               </div>
 
-              {/* Percent */}
-              <span style={{ fontSize: 11, color: '#94a3b8', fontFamily: 'monospace', width: 36, textAlign: 'right' }}>
+              {/* ── CHANGED: CSS variable on percent ── */}
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace', width: 36, textAlign: 'right' }}>
                 {entry.percent}%
               </span>
 
-              {/* Value */}
-              <span style={{ fontSize: 11, color: '#fff', fontFamily: 'monospace', width: 90, textAlign: 'right' }}>
+              {/* ── CHANGED: CSS variable on value ── */}
+              <span style={{ fontSize: 11, color: 'var(--text)', fontFamily: 'monospace', width: 90, textAlign: 'right' }}>
                 ₹{entry.value.toLocaleString('en-IN')}
               </span>
             </div>
@@ -126,15 +129,17 @@ export default function SectorChart({ holdings }) {
           <div style={{
             marginTop: 4,
             paddingTop: 10,
-            borderTop: '1px solid rgba(139,92,246,.12)',
+            borderTop: '1px solid var(--border)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-            <span style={{ fontSize: 10, color: '#e7e7e7', textTransform: 'uppercase', letterSpacing: 1, fontFamily: 'monospace' }}>
+            {/* ── CHANGED: CSS variable on total label ── */}
+            <span style={{ fontSize: 10, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: 1, fontFamily: 'monospace' }}>
               Total Invested
             </span>
-            <span style={{ fontSize: 13, color: '#fff', fontWeight: 700, fontFamily: 'monospace' }}>
+            {/* ── CHANGED: CSS variable on total value ── */}
+            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 700, fontFamily: 'monospace' }}>
               ₹{total.toLocaleString('en-IN')}
             </span>
           </div>

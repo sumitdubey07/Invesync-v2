@@ -20,29 +20,33 @@ const LinkedInIcon = () => (
 )
 
 const PRODUCT_LINKS = [
-  { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Portfolio', to: '/portfolio' },
+  { label: 'Dashboard',       to: '/dashboard' },
+  { label: 'Portfolio',       to: '/portfolio' },
   { label: 'Market Overview', to: '/dashboard' },
-  { label: 'AI Forecast', to: '/dashboard' },
+  { label: 'AI Forecast',     to: '/dashboard' },
 ]
 
 const MARKET_LINKS = [
-  { label: 'NSE Stocks', to: 'https://www.nseindia.com/' },
-  { label: 'BSE Stocks', to: 'https://beta.bseindia.com/' },
+  { label: 'NSE Stocks',  to: 'https://www.nseindia.com/' },
+  { label: 'BSE Stocks',  to: 'https://beta.bseindia.com/' },
   { label: 'Top Gainers', to: 'https://groww.in/markets/top-gainers' },
-  { label: 'Top Losers', to: 'https://groww.in/markets/top-losers' },
+  { label: 'Top Losers',  to: 'https://groww.in/markets/top-losers' },
   { label: 'Most Active', to: 'https://groww.in/markets/top-volume' },
 ]
 
 const SOCIALS = [
-  { icon: <GithubIcon />,   href: 'https://github.com/sumitdubey07/', label: 'GitHub' },
-  { icon: <XIcon />,        href: 'https://x.com/',      label: 'X / Twitter' },
-  { icon: <LinkedInIcon />, href: 'https://linkedin.com/in/sumit-dubey-07s/', label: 'LinkedIn' },
+  { icon: <GithubIcon />,   href: 'https://github.com/sumitdubey07/',            label: 'GitHub' },
+  { icon: <XIcon />,        href: 'https://x.com/',                              label: 'X / Twitter' },
+  { icon: <LinkedInIcon />, href: 'https://linkedin.com/in/sumit-dubey-07s/',    label: 'LinkedIn' },
 ]
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-purple-500/25 bg-[#05050d] overflow-hidden mt-16">
+    // ── CHANGED: CSS variables for background and border ──
+    <footer
+      style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)' }}
+      className="relative overflow-hidden mt-16"
+    >
 
       <style>{`
         .footer-grid-bg {
@@ -73,7 +77,7 @@ export default function Footer() {
         }
         .footer-nav-link {
           display: flex; align-items: center; gap: 6px;
-          font-size: 12px; color: #cbd5e1;
+          font-size: 12px; color: var(--text-muted);
           transition: color .15s; cursor: pointer; text-decoration: none;
         }
         .footer-nav-link::before {
@@ -88,7 +92,7 @@ export default function Footer() {
           border: 1px solid rgba(139,92,246,.22);
           background: rgba(139,92,246,.06);
           display: flex; align-items: center; justify-content: center;
-          color: #6d6d8a; cursor: pointer; text-decoration: none;
+          color: var(--text-muted); cursor: pointer; text-decoration: none;
           transition: border-color .2s, background .2s, color .2s;
         }
         .footer-soc-btn:hover {
@@ -103,6 +107,7 @@ export default function Footer() {
       {/* Decorative layers */}
       <div className="footer-grid-bg" />
       <div className="footer-scanline" />
+
       {/* Top glow line */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-3/5 pointer-events-none"
@@ -125,14 +130,13 @@ export default function Footer() {
               >
                 <TrendingUp size={15} className="text-white" />
               </div>
-              <span className="text-white font-bold text-lg tracking-tight">
-                Inve<span
-                  style={{ background: 'linear-gradient(90deg,#a78bfa,#60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-                >sync</span>
+              <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--text)' }}>
+                Inve<span style={{ background: 'linear-gradient(90deg,#a78bfa,#60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>sync</span>
               </span>
             </div>
 
-            <p className="text-slate-300 text-xs leading-relaxed mb-5">
+            {/* ── CHANGED: CSS variable for description text ── */}
+            <p style={{ color: 'var(--text-faint)' }} className="text-xs leading-relaxed mb-5">
               Practice trading Indian stocks with ₹1,00,000 virtual money. No risk, real market data.
             </p>
 
@@ -170,7 +174,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-2.5">
               {MARKET_LINKS.map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to} className="footer-nav-link">{l.label}</Link>
+                  <a href={l.to} target="_blank" rel="noopener noreferrer" className="footer-nav-link">{l.label}</a>
                 </li>
               ))}
             </ul>
@@ -179,9 +183,14 @@ export default function Footer() {
           {/* Disclaimer */}
           <div>
             <div className="footer-col-head">Disclaimer</div>
+            {/* ── CHANGED: CSS variable for disclaimer text ── */}
             <p
-              className="text-slate-400 text-[11px] leading-relaxed p-3 rounded-lg border"
-              style={{ borderColor: 'rgba(139,92,246,.12)', background: 'rgba(139,92,246,.03)' }}
+              style={{
+                color: 'var(--text-faint)',
+                borderColor: 'rgba(139,92,246,.12)',
+                background: 'rgba(139,92,246,.03)',
+              }}
+              className="text-[11px] leading-relaxed p-3 rounded-lg border"
             >
               Invesync is a paper trading platform for educational purposes only. All trades use virtual money. This is not financial advice. Market data is delayed by 15 minutes.
             </p>
@@ -190,16 +199,19 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="relative border-t border-purple-500/15">
+      {/* ── CHANGED: CSS variable for bottom border ── */}
+      <div className="relative" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-slate-400 text-[11px]">
+          {/* ── CHANGED: CSS variable for copyright text ── */}
+          <p style={{ color: 'var(--text-faint)' }} className="text-[11px]">
             © 2026 Invesync · Built by Sumit Dubey · Educational use only
           </p>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full border border-green-400/30 flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400 footer-status-dot" />
             </div>
-            <span className="text-slate-300 text-[11px]">All systems operational</span>
+            {/* ── CHANGED: CSS variable for status text ── */}
+            <span style={{ color: 'var(--text-muted)' }} className="text-[11px]">All systems operational</span>
           </div>
         </div>
       </div>

@@ -7,9 +7,11 @@ import Dashboard from './pages/Dashboard'
 import StockDetail from './pages/StockDetail'
 import Portfolio from './pages/Portfolio'
 import Leaderboard from './pages/Leaderboard'
+import { ThemeProvider } from './context/ThemeContext'
 
 function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -33,6 +35,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   )
 }
 

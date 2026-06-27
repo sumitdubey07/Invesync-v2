@@ -4,7 +4,8 @@ import MobileNav from './MobileNav'
 
 export default function Layout({ children, showFooter = true }) {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+    // ── CHANGED: CSS variable for page background ──
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
       <Navbar />
       <main className="flex-1 pb-20 md:pb-0">{children}</main>
       {showFooter && <Footer />}
